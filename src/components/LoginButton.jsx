@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { auth, provider } from "../firebase";
-import { signInWithPopup } from "firebase/auth";
-import { signOut } from "firebase/auth/web-extension";
+import { auth, provider, githubProvider } from "../firebase";
+import { signInWithPopup, signOut } from "firebase/auth";
 
 const LoginButton = () => {
   const [user, setUser] = useState();
 
-  // _______________________
+  // Login with Google
   const handleLogin = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
@@ -20,31 +19,47 @@ const LoginButton = () => {
       });
   };
 
-  // _________________________
-  const handelSignOut = () => {
+  // Sign out
+  const handleSignOut = () => {
     signOut(auth)
       .then(() => {
         console.log("User signed out");
+        setUser(null); // Set user to null after successful sign out
       })
       .catch((error) => {
-        console.log(error);
+        console.log("Error during sign-out:", error);
       });
-    setUser(null);
+  };
+
+  // GitHub Sign-In
+  const handleGitHub = () => {
+    signInWithPopup(auth, githubProvider)
+      .then((result) => {
+        console.log("GitHub User info:", result.user);
+        setUser(result.user);
+      })
+      .catch((error) => {
+        console.error("Error during GitHub login:", error);
+        setUser(null);
+      });
   };
 
   return (
     <div>
       {user ? (
-        <button onClick={handelSignOut}>Sign Out</button>
+        <button onClick={handleSignOut}>Sign Out</button>
       ) : (
-        <button onClick={handleLogin}>Login with Google</button>
+        <>
+          <button onClick={handleLogin}>Login with Google</button>
+          <button onClick={handleGitHub}>Login with GitHub</button>
+        </>
       )}
       {user && (
         <div>
           <h2>Welcome, {user.displayName}!</h2>
-          <p> Email: {user.email}</p>
+          <p>Email: {user.email}</p>
           <p>
-            Photo : <img src={user.photoURL} alt="Photo" />
+            Photo: <img src={user.photoURL} alt="Profile" />
           </p>
         </div>
       )}
