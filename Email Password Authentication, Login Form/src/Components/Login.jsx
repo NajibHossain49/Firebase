@@ -1,29 +1,22 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
 import { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-
+import { auth } from "../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { Link } from "react-router-dom";
 const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [SuccessMessage, setSuccessMessage] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
-  // __________________________________
-  const handelFormSubmit = (event) => {
+  const handelLogin = (event) => {
     event.preventDefault();
     const email = event.target.email.value;
     const password = event.target.password.value;
-    const terms = event.target.terms.checked;
-    console.log(email, password, terms);
+    console.log(email, password);
+    setSuccessMessage(false);
+
     // \end{code}
 
     const emailRegex =
       /^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com|yahoo\.com|icloud\.com)$/i;
-
-    if (!terms) {
-      setErrorMessage("Please Accept Terms & Conditions 😁");
-      return;
-    }
 
     if (!emailRegex.test(email)) {
       setErrorMessage("Please enter a valid email address 📧");
@@ -40,13 +33,15 @@ const Login = () => {
       return;
     }
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        console.log(userCredential.user);
+    // Login
+    signInWithEmailAndPassword(auth, email, password)
+      .then((result) => {
+        console.log(result.user);
         setErrorMessage("");
         setSuccessMessage(true);
       })
       .catch((error) => {
+        console.log(error.message);
         // Handle error based on the error code
         let customMessage = "";
         switch (error.code) {
@@ -71,75 +66,57 @@ const Login = () => {
       });
   };
 
-  // ____________________________________________________________________
-
+  //______________________________________________
   return (
-    <div className="hero-content flex-col lg:flex-row-reverse mt-24">
-      <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-        <form onSubmit={handelFormSubmit} className="card-body">
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Email</span>
-            </label>
-            <input
-              type="email"
-              placeholder="email"
-              name="email"
-              className="input input-bordered"
-              required
-            />
-          </div>
-          <div className="form-control relative">
-            <label className="label">
-              <span className="label-text">Password</span>
-            </label>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="password"
-              name="password"
-              className="input input-bordered"
-              required
-            />
-            <div
-              onClick={() => setShowPassword(!showPassword)}
-              className="btn btn-xs absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? (
-                <FaEyeSlash className="h-4 w-4 text-gray-500" />
-              ) : (
-                <FaEye className="h-4 w-4 text-gray-500" />
-              )}
-            </div>
-            <label className="label">
-              <a href="#" className="label-text-alt link link-hover">
-                Forgot password?
-              </a>
-            </label>
-          </div>
-          {/* \end{code} */}
-          <div className="form-control">
-            <label className="label cursor-pointer">
-              <span className="label-text">Accept Terms & Conditions</span>
+    <div className="hero bg-base-200 min-h-screen">
+      <div className="hero-content flex-col lg:flex-row-reverse">
+        <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
+          <form onSubmit={handelLogin} className="card-body">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Email</span>
+              </label>
               <input
-                type="checkbox"
-                name="terms"
-                className="checkbox checkbox-primary"
+                type="email"
+                placeholder="email"
+                name="email"
+                className="input input-bordered"
+                required
               />
-            </label>
-          </div>
-          {/* \end{code} */}
-          <div className="form-control mt-6">
-            <button className="btn btn-primary">Login</button>
-          </div>
-        </form>
-        {/* \begin{pre} */}
-        {errorMessage && (
-          <p className="text-red-500 text-center">{errorMessage}</p>
-        )}
-        {SuccessMessage && (
-          <p className="text-green-500 text-center">Login Successful</p>
-        )}
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Password</span>
+              </label>
+              <input
+                type="password"
+                placeholder="password"
+                name="password"
+                className="input input-bordered"
+                required
+              />
+              <label className="label">
+                <a href="#" className="label-text-alt link link-hover">
+                  Forgot password?
+                </a>
+              </label>
+            </div>
+            <div className="form-control mt-6">
+              <button className="btn btn-primary">Login</button>
+            </div>
+          </form>
+          {/* \begin{pre} */}
+          {errorMessage && (
+            <p className="text-red-500 text-center">{errorMessage}</p>
+          )}
+          {SuccessMessage && (
+            <p className="text-green-500 text-center">Login Successful</p>
+          )}
+
+          <Link to='/registration'>
+          <p className="text-blue-700 p-4">Create an account</p>
+          </Link>
+        </div>
       </div>
     </div>
   );

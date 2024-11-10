@@ -1,9 +1,7 @@
-
-
 const Home = () => {
     return (
-        <div>
-            Home...
+        <div className="mt-20 text-center">
+            Welcome !  
         </div>
     );
 };
