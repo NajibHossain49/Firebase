@@ -1,22 +1,30 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [SuccessMessage, setSuccessMessage] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // __________________________________
   const handelFormSubmit = (event) => {
     event.preventDefault();
     const email = event.target.email.value;
     const password = event.target.password.value;
-    console.log(email, password);
+    const terms = event.target.terms.checked;
+    console.log(email, password, terms);
     // \end{code}
 
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com|yahoo\.com|icloud\.com)$/i;
+    const emailRegex =
+      /^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com|yahoo\.com|icloud\.com)$/i;
 
-    // Example usage
+    if (!terms) {
+      setErrorMessage("Please Accept Terms & Conditions 😁");
+      return;
+    }
+
     if (!emailRegex.test(email)) {
       setErrorMessage("Please enter a valid email address 📧");
       return;
@@ -63,6 +71,8 @@ const Login = () => {
       });
   };
 
+  // ____________________________________________________________________
+
   return (
     <div className="hero-content flex-col lg:flex-row-reverse mt-24">
       <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
@@ -79,23 +89,46 @@ const Login = () => {
               required
             />
           </div>
-          <div className="form-control">
+          <div className="form-control relative">
             <label className="label">
               <span className="label-text">Password</span>
             </label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="password"
               name="password"
               className="input input-bordered"
               required
             />
+            <div
+              onClick={() => setShowPassword(!showPassword)}
+              className="btn btn-xs absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <FaEyeSlash className="h-4 w-4 text-gray-500" />
+              ) : (
+                <FaEye className="h-4 w-4 text-gray-500" />
+              )}
+            </div>
             <label className="label">
               <a href="#" className="label-text-alt link link-hover">
                 Forgot password?
               </a>
             </label>
           </div>
+          {/* \end{code} */}
+          <div className="form-control">
+            <label className="label cursor-pointer">
+              <span className="label-text">Accept Terms & Conditions</span>
+              <input
+                type="checkbox"
+                name="terms"
+                className="checkbox checkbox-primary"
+              />
+            </label>
+          </div>
+          {/* \end{code} */}
           <div className="form-control mt-6">
             <button className="btn btn-primary">Login</button>
           </div>
