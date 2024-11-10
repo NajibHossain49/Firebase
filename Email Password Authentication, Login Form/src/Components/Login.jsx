@@ -1,10 +1,26 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { auth } from "../firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { Link } from "react-router-dom";
 const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [SuccessMessage, setSuccessMessage] = useState(false);
+  const emailRef = useRef();
+
+  const handleForgetPassword = () => {
+    console.log("Get me your Email", emailRef.current.value);
+    const email = emailRef.current.value;
+    if (!email) {
+      setErrorMessage("Please enter your email 😅");
+    } else {
+      sendPasswordResetEmail(auth, email).then(() => {
+        alert("Password Reset Email Sent, Please Check your Mail");
+      });
+    }
+  };
 
   const handelLogin = (event) => {
     event.preventDefault();
@@ -39,7 +55,15 @@ const Login = () => {
         console.log(result.user);
         setErrorMessage("");
         setSuccessMessage(true);
+
+        // Email Verification
+        if (!result.user.emailVerified) {
+          setErrorMessage("Please Verified your Email address 🤬");
+        } else {
+          setSuccessMessage(true);
+        }
       })
+
       .catch((error) => {
         console.log(error.message);
         // Handle error based on the error code
@@ -79,6 +103,7 @@ const Login = () => {
               <input
                 type="email"
                 placeholder="email"
+                ref={emailRef}
                 name="email"
                 className="input input-bordered"
                 required
@@ -95,7 +120,7 @@ const Login = () => {
                 className="input input-bordered"
                 required
               />
-              <label className="label">
+              <label onClick={handleForgetPassword} className="label">
                 <a href="#" className="label-text-alt link link-hover">
                   Forgot password?
                 </a>
@@ -113,8 +138,8 @@ const Login = () => {
             <p className="text-green-500 text-center">Login Successful</p>
           )}
 
-          <Link to='/registration'>
-          <p className="text-blue-700 p-4">Create an account</p>
+          <Link to="/registration">
+            <p className="text-blue-700 p-4">Create an account</p>
           </Link>
         </div>
       </div>
