@@ -10,18 +10,25 @@ const Login = () => {
   const [SuccessMessage, setSuccessMessage] = useState(false);
   const emailRef = useRef();
 
+  // __________________________________
   const handleForgetPassword = () => {
-    console.log("Get me your Email", emailRef.current.value);
     const email = emailRef.current.value;
     if (!email) {
       setErrorMessage("Please enter your email 😅");
     } else {
-      sendPasswordResetEmail(auth, email).then(() => {
-        alert("Password Reset Email Sent, Please Check your Mail");
-      });
+      sendPasswordResetEmail(auth, email)
+        .then(() => {
+          alert("Password Reset Email Sent. Please check your mail.");
+        })
+        .catch((error) => {
+          setErrorMessage(
+            "Failed to send password reset email. Try again later."
+          );
+          console.error(error);
+        });
     }
   };
-
+  // ________________________________
   const handelLogin = (event) => {
     event.preventDefault();
     const email = event.target.email.value;
@@ -52,15 +59,15 @@ const Login = () => {
     // Login
     signInWithEmailAndPassword(auth, email, password)
       .then((result) => {
-        console.log(result.user);
-        setErrorMessage("");
-        setSuccessMessage(true);
-
         // Email Verification
         if (!result.user.emailVerified) {
-          setErrorMessage("Please Verified your Email address 🤬");
+          setErrorMessage(
+            "Please verify your email address before logging in 🤬"
+          );
         } else {
+          setErrorMessage("");
           setSuccessMessage(true);
+          console.log("Logged in:", result.user);
         }
       })
 
