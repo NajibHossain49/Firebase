@@ -1,4 +1,8 @@
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile as firebaseUpdateProfile
+} from "firebase/auth";
 import { auth } from "../firebase";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -12,11 +16,13 @@ const Registration = () => {
   // __________________________________
   const handelFormSubmit = (event) => {
     event.preventDefault();
-    const username = event.target.username.value;
+
     const email = event.target.email.value;
     const password = event.target.password.value;
+    const Username = event.target.username.value;
+    const Photo = event.target.photo.value;
     const terms = event.target.terms.checked;
-    console.log(username, email, password, terms);
+    console.log(Username, email, password, terms, Photo);
     // \end{code}
 
     const emailRegex =
@@ -49,10 +55,24 @@ const Registration = () => {
         setSuccessMessage(true);
 
         // Send Email verification Email
-        sendEmailVerification(auth.currentUser)
-        .then(() => {
+        sendEmailVerification(auth.currentUser).then(() => {
           console.log("Email Verification Email Sent");
-        })
+        });
+
+        // update user profile
+        const updateProfile = {
+          displayName: Username,
+          photoURL: Photo,
+        };
+        // \end{code}
+
+        firebaseUpdateProfile(auth.currentUser, updateProfile)
+          .then(() => {
+            console.log("User Profile Updated");
+          })
+          .catch((error) =>
+            console.log("An unknown error occurred. Please try again.")
+          );
       })
       .catch((error) => {
         // Handle error based on the error code
@@ -93,6 +113,18 @@ const Registration = () => {
               type="text"
               placeholder="username"
               name="username"
+              className="input input-bordered"
+              required
+            />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Photo</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Photo URL"
+              name="photo"
               className="input input-bordered"
               required
             />
