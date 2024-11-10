@@ -4,6 +4,7 @@ import { useState } from "react";
 
 const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
+  const [SuccessMessage, setSuccessMessage] = useState(false);
 
   // __________________________________
   const handelFormSubmit = (event) => {
@@ -13,10 +14,29 @@ const Login = () => {
     console.log(email, password);
     // \end{code}
 
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com|yahoo\.com|icloud\.com)$/i;
+
+    // Example usage
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Please enter a valid email address 📧");
+      return;
+    }
+
+    const strongPasswordRegex =
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (!strongPasswordRegex.test(password)) {
+      setErrorMessage(
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&) 😤"
+      );
+      return;
+    }
+
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         console.log(userCredential.user);
         setErrorMessage("");
+        setSuccessMessage(true);
       })
       .catch((error) => {
         // Handle error based on the error code
@@ -39,6 +59,7 @@ const Login = () => {
             customMessage = "An unknown error occurred. Please try again.";
         }
         setErrorMessage(customMessage);
+        setSuccessMessage(false);
       });
   };
 
@@ -80,7 +101,12 @@ const Login = () => {
           </div>
         </form>
         {/* \begin{pre} */}
-        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+        {errorMessage && (
+          <p className="text-red-500 text-center">{errorMessage}</p>
+        )}
+        {SuccessMessage && (
+          <p className="text-green-500 text-center">Login Successful</p>
+        )}
       </div>
     </div>
   );
