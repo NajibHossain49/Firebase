@@ -1,12 +1,27 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-
+import { AuthContext } from "../Context/Context";
 const Login = () => {
+
+  // Access Context
+  const { login } = useContext(AuthContext);
+
+  // ______________________________
   const handelLogin = (event) => {
     event.preventDefault();
     const email = event.target.email.value;
     const password = event.target.password.value;
-    console.log(email,password);
+    console.log(email, password);
+
+
+    // Login Credential
+    login(email,password)
+    .then(result=>{
+      console.log(result.user);
+    })
+    .catch(error=>{
+      console.log("Error",error.message);
+    })
   };
 
   // ________________________________________________
@@ -52,7 +67,9 @@ const Login = () => {
             </div>
           </form>
           {/* \end{code} */}
-          <Link to='/register' className="p-5">Don't have an account? Sign Up</Link>
+          <Link to="/register" className="p-5">
+            Don't have an account? Sign Up
+          </Link>
         </div>
       </div>
     </div>
