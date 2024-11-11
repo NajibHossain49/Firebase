@@ -1,10 +1,11 @@
 /* eslint-disable react/prop-types */
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { auth } from "../firebase/firebase"; // Ensure this path is correct
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
+  signOut,
 } from "firebase/auth";
 
 // Create Authentication Context
@@ -13,6 +14,18 @@ export const AuthContext = createContext(null);
 const Context = ({ children }) => {
   // State Manage User is Logged in or Not
   const [user, setUser] = useState(null);
+
+  // Manage User is Logged in or Not by Observer with useEffect
+  useEffect(() => {
+    const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log("Currently Logged User", currentUser);
+      setUser(currentUser);
+    });
+
+    return () => {
+      unSubscribe();
+    };
+  }, []);
 
   // Create User
   const createUser = (email, password) => {
@@ -24,21 +37,20 @@ const Context = ({ children }) => {
     return signInWithEmailAndPassword(auth, email, password);
   };
 
-  // Manage User is Logged in or Not by Observer
-  onAuthStateChanged(auth, (currentUser) => {
-    if (currentUser) {
-      console.log("Currently Logged User", currentUser);
-      setUser(currentUser);
-    } else {
-      console.log("No Currently Logged User");
-      setUser(null);
-    }
-  });
+
+// Logout user
+
+const logout = () => {
+  return signOut(auth)
+};
+
+
 
   const authInfo = {
-    name: "Najib",
     createUser,
     login,
+    user,
+    logout,
   };
 
   return (
