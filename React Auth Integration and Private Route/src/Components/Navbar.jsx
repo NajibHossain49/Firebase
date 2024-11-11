@@ -3,18 +3,18 @@ import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "../Context/Context";
 
 const Navbar = () => {
-  const {user,logout} = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   console.log(user);
 
-  const handelLogOut =()=>{
+  const handelLogOut = () => {
     logout()
-    .then(()=>{
-      console.log("logged out")
-    })
-    .catch((error)=>{
-      console.log(error.message)
-    })
-  }
+      .then(() => {
+        console.log("logged out");
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
 
   const links = (
     <>
@@ -28,6 +28,11 @@ const Navbar = () => {
       <li>
         <NavLink to="/register">Register</NavLink>
       </li>
+      {user && (
+        <li>
+          <NavLink to="/orders">My Orders</NavLink>
+        </li>
+      )}
     </>
   );
 
@@ -64,16 +69,21 @@ const Navbar = () => {
         <ul className="menu menu-horizontal px-1">{links}</ul>
       </div>
       <div className="navbar-end gap-4">
-        {
-          user ? 
+        {user ? (
           <>
-          <span className="text-teal-200">{user?.email}</span>
-          <button className="btn text-teal-200" onClick={() => handelLogOut()}>Log out</button>
+            <span className="text-teal-200">{user?.email}</span>
+            <button
+              className="btn text-teal-200"
+              onClick={() => handelLogOut()}
+            >
+              Log out
+            </button>
           </>
-          
-          : <button className="btn text-teal-200"><Link to='/login'>Login</Link></button>
-        }
-        
+        ) : (
+          <button className="btn text-teal-200">
+            <Link to="/login">Login</Link>
+          </button>
+        )}
       </div>
     </div>
   );

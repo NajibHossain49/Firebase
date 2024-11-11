@@ -15,11 +15,14 @@ const Context = ({ children }) => {
   // State Manage User is Logged in or Not
   const [user, setUser] = useState(null);
 
+  const [loading, setLoading] = useState(true);
+
   // Manage User is Logged in or Not by Observer with useEffect
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
       console.log("Currently Logged User", currentUser);
       setUser(currentUser);
+      setLoading(false);
     });
 
     return () => {
@@ -29,24 +32,26 @@ const Context = ({ children }) => {
 
   // Create User
   const createUser = (email, password) => {
+    setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
+    
   };
 
   // Login User
   const login = (email, password) => {
+    setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
 
+  // Logout user
 
-// Logout user
-
-const logout = () => {
-  return signOut(auth)
-};
-
-
+  const logout = () => {
+    setLoading(true);
+    return signOut(auth);
+  };
 
   const authInfo = {
+    loading,
     createUser,
     login,
     user,
