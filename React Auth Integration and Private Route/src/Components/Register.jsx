@@ -1,13 +1,28 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../Context/Context";
 
 const Register = () => {
+  // Access Context at the top level
+  const { createUser } = useContext(AuthContext);
+
   const handelRegister = (event) => {
     event.preventDefault();
     const username = event.target.username.value;
     const email = event.target.email.value;
     const password = event.target.password.value;
     console.log(username, email, password);
+
+    // Create user
+    createUser(email, password)
+      .then((userCredential) => {
+        console.log(userCredential.user);
+      })
+      .catch((error) => {
+        console.log("Error", error.message);
+      });
   };
+
 
   // _______________________________________________
   return (
